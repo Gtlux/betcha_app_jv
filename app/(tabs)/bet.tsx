@@ -17,6 +17,7 @@ import BettorsList from '@/components/betting/BettorsList';
 import { usePlaceBet } from '@/hooks/usePlaceBet';
 import { useQuestBets } from '@/hooks/useQuestBets';
 import { useToast } from '@/providers/ToastProvider';
+import SearchBar from '@/components/ui/SearchBar';
 
 import { useActiveQuest, QuestStatus } from '@/hooks/useActiveQuest';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -49,6 +50,12 @@ export default function BetScreen() {
   const [betsDataMap, setBetsDataMap] = useState<Record<string, typeof bettorsData>>({});
   const [statusFilter, setStatusFilter] = useState<QuestStatus>('open');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredQuests = quests.filter((q) => {
+    if (!searchQuery) return true;
+    return q.title.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   const onRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -150,16 +157,21 @@ export default function BetScreen() {
           </Box>
 
           {/* Statuso filtras */}
-          <StatusFilterTabs current={statusFilter} onChange={setStatusFilter} />
+          <StatusFilterTabs current={statusFilter} onChange={(s) => { setStatusFilter(s); setSearchQuery(''); }} />
 
-          {quests.length === 0 ? (
-            statusFilter === 'open' ? (
+          {/* Paieška */}
+          <SearchBar onSearch={setSearchQuery} placeholder="Ieškoti quest'ų..." />
+
+          {filteredQuests.length === 0 ? (
+            searchQuery ? (
+              <NoSearchResultsPlaceholder />
+            ) : statusFilter === 'open' ? (
               <NoQuestPlaceholder />
             ) : (
               <NoQuestForFilterPlaceholder status={statusFilter} />
             )
           ) : (
-            quests.map((quest) => (
+            filteredQuests.map((quest) => (
               <Box key={quest.id} marginBottom="l">
                 {notification?.questId === quest.id && (
                   <Box
@@ -362,6 +374,22 @@ function NoQuestForFilterPlaceholder({ status }: { status: QuestStatus }) {
       <Text style={{ fontSize: 38, marginBottom: 16 }}>📭</Text>
       <Text color="textSecondary" textAlign="center" style={{ fontSize: 14, lineHeight: 20 }}>
         {message}
+      </Text>
+    </Box>
+  );
+}
+
+function NoSearchResultsPlaceholder() {
+  return (
+    <Box
+      alignItems="center"
+      justifyContent="center"
+      paddingHorizontal="l"
+      style={{ paddingVertical: 60 }}
+    >
+      <Text style={{ fontSize: 38, marginBottom: 16 }}>🔍</Text>
+      <Text color="textSecondary" textAlign="center" style={{ fontSize: 14, lineHeight: 20 }}>
+        Nerasta quest'ų pagal paieškos kriterijus
       </Text>
     </Box>
   );
