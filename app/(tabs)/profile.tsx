@@ -2,6 +2,7 @@ import React from 'react';
 import Box from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
 import ProfilePanel from '@/components/profile/ProfilePanel';
+import ActivityLog from '@/components/profile/ActivityLog';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useInventory } from '@/hooks/useInventory';
 import { useFocusEffect } from '@react-navigation/native';
@@ -150,6 +151,8 @@ export default function ProfileScreen() {
           balance={profile.balance}
           totalPoints={profile.total_points_collected || 0}
         />
+
+        <ActivityLog />
 
         <Box paddingHorizontal="m" marginTop="m">
           <Text variant="header" color="textPrimary" marginBottom="m">
