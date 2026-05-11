@@ -14,6 +14,7 @@ describe('SearchBar', () => {
 
   afterEach(() => {
     mockOnSearch.mockClear();
+    jest.clearAllTimers();
   });
 
   it('turėtų renderinti su placeholder tekstu', () => {
