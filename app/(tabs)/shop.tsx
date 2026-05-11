@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   RefreshControl,
   Modal,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import Box from '@/components/ui/Box';
@@ -13,6 +12,7 @@ import { useShop, StoreItem } from '@/hooks/useShop';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { SymbolView } from 'expo-symbols';
 import { useFocusEffect } from '@react-navigation/native';
+import { useToast } from '@/providers/ToastProvider';
 
 export default function ShopScreen() {
   const { items, loading, error, refresh, purchaseItem } = useShop();
@@ -20,14 +20,8 @@ export default function ShopScreen() {
   const [selectedItem, setSelectedItem] = useState<StoreItem | null>(null);
   const [purchasing, setPurchasing] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { showToast } = useToast();
   // Mock režimas pašalintas – naudojame tik serverio API
-
-  useEffect(() => {
-    if (!successMessage) return;
-    const timer = setTimeout(() => setSuccessMessage(null), 2200);
-    return () => clearTimeout(timer);
-  }, [successMessage]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -56,7 +50,7 @@ export default function ShopScreen() {
     if (!selectedItem || !profile) return;
 
     if (profile.balance < selectedItem.price) {
-      Alert.alert('Klaida', 'Nepakanka taškų pirkimui.');
+      showToast('Nepakanka taškų pirkimui.', 'error');
       return;
     }
 
@@ -67,9 +61,9 @@ export default function ShopScreen() {
     if (result.success) {
       await Promise.all([refreshProfile(), refresh()]);
       setSelectedItem(null);
-      setSuccessMessage(`Nusipirkai: ${selectedItem.name}`);
+      showToast(`Nusipirkai: ${selectedItem.name}`, 'success');
     } else {
-      Alert.alert('Klaida', result.error || 'Nepavyko atlikti pirkimo');
+      showToast(result.error || 'Nepavyko atlikti pirkimo', 'error');
     }
   };
 
@@ -114,22 +108,6 @@ export default function ShopScreen() {
           </Text>
         </Box>
       </Box>
-
-      {successMessage ? (
-        <Box
-          marginHorizontal="m"
-          marginBottom="s"
-          backgroundColor="surfaceContainerHigh"
-          borderRadius={12}
-          padding="m"
-          borderWidth={1}
-          borderColor="linkPrimary"
-        >
-          <Text color="textPrimary" fontWeight="bold">
-            {successMessage}
-          </Text>
-        </Box>
-      ) : null}
 
       {loading && !refreshing && items.length === 0 ? (
         <Box flex={1} justifyContent="center" alignItems="center">

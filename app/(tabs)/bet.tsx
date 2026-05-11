@@ -16,6 +16,7 @@ import BetPanel from '@/components/betting/BetPanel';
 import BettorsList from '@/components/betting/BettorsList';
 import { usePlaceBet } from '@/hooks/usePlaceBet';
 import { useQuestBets } from '@/hooks/useQuestBets';
+import { useToast } from '@/providers/ToastProvider';
 
 import { useActiveQuest, QuestStatus } from '@/hooks/useActiveQuest';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -41,6 +42,7 @@ export default function BetScreen() {
   const { session } = useAuth();
   const currentUserId = session?.user.id ?? null;
   const router = useRouter();
+  const { showToast } = useToast();
 
   const [notification, setNotification] = useState<BetNotification>(null);
   const [rateLimitedIds, setRateLimitedIds] = useState<Set<string>>(new Set());
@@ -89,20 +91,12 @@ export default function BetScreen() {
 
     if (result.success) {
       refreshProfile();
-      setNotification({
-        type: 'success',
-        message: `Statymas priimtas! Rezervuota ${amount} taškų.`,
-        questId: quest.id,
-      });
+      showToast(`Statymas priimtas! Rezervuota ${amount} taškų.`, 'success');
       fetchBets(quest.id).then((data) => {
         setBetsDataMap((prev) => ({ ...prev, [quest.id]: data }));
       });
     } else {
-      setNotification({
-        type: 'error',
-        message: result.error ?? 'Nepavyko atlikti statymo.',
-        questId: quest.id,
-      });
+      showToast(result.error ?? 'Nepavyko atlikti statymo.', 'error');
       if (result.error?.includes('Pristabdykite')) {
         setRateLimitedIds((prev) => new Set(prev).add(quest.id));
         setTimeout(() => {
