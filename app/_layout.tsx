@@ -15,6 +15,7 @@ import { useColorScheme } from '@/components/useColorScheme';
 import theme from '@/constants/theme';
 import { AuthProvider, useAuth } from '@/providers/AuthProvider';
 import { GroupProvider } from '@/providers/GroupProvider';
+import { ToastProvider } from '@/providers/ToastProvider';
 
 LogBox.ignoreLogs(['Invalid Refresh Token: Refresh Token Not Found']);
 
@@ -54,7 +55,9 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <GroupProvider>
-        <RootLayoutNav />
+        <ToastProvider>
+          <RootLayoutNav />
+        </ToastProvider>
       </GroupProvider>
     </AuthProvider>
   );
