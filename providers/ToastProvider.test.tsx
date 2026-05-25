@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { render, act } from '@testing-library/react-native';
-import { ToastProvider, useToast } from '../ToastProvider';
+import { ToastProvider, useToast } from './ToastProvider';
 import { Text, Pressable } from 'react-native';
 
 // Netikri laikmačiai — leidžia kontroliuoti setTimeout testuose
