@@ -1,0 +1,42 @@
+# CI Pipeline — Feature šakoms (betcha_app)
+# Autorius: JV (Jarek)
+# Paleidžiamas automatiškai kai pushinama į feature/* šakas
+
+name: CI Feature Branch (App)
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Nusiklonuojame repo kodą
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Nustatome Node.js versiją
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Instaliuojame priklausomybes
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. TypeScript tipų tikrinimas (build)
+      - name: TypeScript check
+        run: npx tsc --noEmit --skipLibCheck
+
+      # 5. Paleidžiame unit testus
+      - name: Run tests
+        run: npx jest --ci --passWithNoTests --forceExit
