@@ -5,7 +5,7 @@
 // Context + Hook + Provider integraciją, ne vizualinį komponentą.
 
 import React from 'react';
-import { render, act } from '@testing-library/react-native';
+import { render, act, fireEvent } from '@testing-library/react-native';
 import { ToastProvider, useToast } from './ToastProvider';
 import { Text, Pressable } from 'react-native';
 
@@ -61,7 +61,7 @@ describe('ToastProvider (ND2 — nauji testai)', () => {
 
     // Paspaudžiame mygtuką, kuris iškviečia showToast('Sėkmė!', 'success')
     act(() => {
-      getByTestId('trigger-success').props.onPress();
+      fireEvent.press(getByTestId('trigger-success'));
     });
 
     // Tikriname, ar pranešimo tekstas atsirado ekrane
@@ -76,7 +76,7 @@ describe('ToastProvider (ND2 — nauji testai)', () => {
 
     // Iškviečiame error tipo pranešimą
     act(() => {
-      getByTestId('trigger-error').props.onPress();
+      fireEvent.press(getByTestId('trigger-error'));
     });
 
     // Tikriname ikonėlę ir tekstą
@@ -91,7 +91,7 @@ describe('ToastProvider (ND2 — nauji testai)', () => {
 
     // Iškviečiame warning tipo pranešimą su 5s trukme
     act(() => {
-      getByTestId('trigger-warning').props.onPress();
+      fireEvent.press(getByTestId('trigger-warning'));
     });
 
     // Tikriname, ar pranešimas rodomas
@@ -127,13 +127,13 @@ describe('ToastProvider (ND2 — nauji testai)', () => {
 
     // 1. Iškviečiame success pranešimą
     act(() => {
-      getByTestId('trigger-success').props.onPress();
+      fireEvent.press(getByTestId('trigger-success'));
     });
     expect(getByText('Sėkmė!')).toBeTruthy();
 
     // 2. Iš karto iškviečiame error pranešimą
     act(() => {
-      getByTestId('trigger-error').props.onPress();
+      fireEvent.press(getByTestId('trigger-error'));
     });
 
     // 3. Naujas pranešimas ('Klaida!') turi pakeisti seną ('Sėkmė!')
@@ -171,7 +171,7 @@ describe('ToastProvider (ND2 — nauji testai)', () => {
     );
 
     act(() => {
-      getByTestId('trigger-zero').props.onPress();
+      fireEvent.press(getByTestId('trigger-zero'));
     });
 
     // Po setTimeout(fn, 0) + animacijos laiko pranešimas turėtų pradingti
@@ -209,7 +209,7 @@ describe('ToastProvider (ND2 — nauji testai)', () => {
     );
 
     act(() => {
-      getByTestId('trigger-empty').props.onPress();
+      fireEvent.press(getByTestId('trigger-empty'));
     });
 
     // DEFEKTAS: Jei toast rodomas su tuščiu tekstu — tai blogas UX.
@@ -247,7 +247,7 @@ describe('ToastProvider (ND2 — nauji testai)', () => {
     );
 
     act(() => {
-      getByTestId('trigger-negative').props.onPress();
+      fireEvent.press(getByTestId('trigger-negative'));
     });
 
     // Pranešimas turėtų pasirodyti net su neigiamu duration
