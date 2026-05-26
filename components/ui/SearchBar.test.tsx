@@ -181,7 +181,7 @@ describe('SearchBar', () => {
   //   ir sukurti naują. Rezultate onSearch turi būti iškviesta TIK VIENĄ
   //   kartą su galutiniu tekstu „abc" (ne tris kartus su „a", „ab", „abc").
   //
-  //   Tai esminis debounce testats — jei jis nepavyksta, reiškia
+  //   Tai esminis debounce testas — jei jis nepavyksta, reiškia
   //   clearTimeout() neveikia ir programa vykdo bereikalingas paieškas.
   // ═══════════════════════════════════════════════════════════════════════════
   it('turėtų atšaukti ankstesnį timer prie greito rašymo', () => {

@@ -1,11 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  FlatList,
-  TouchableOpacity,
-  RefreshControl,
-  Modal,
-  ActivityIndicator,
-} from 'react-native';
+import { FlatList, TouchableOpacity, RefreshControl, Modal, ActivityIndicator } from 'react-native';
 import Box from '@/components/ui/Box';
 import Text from '@/components/ui/Text';
 import { useShop, StoreItem } from '@/hooks/useShop';
@@ -76,7 +70,7 @@ export default function ShopScreen() {
         alignItems="center"
         borderWidth={1}
         borderColor="outline"
-        opacity={profile && profile.balance < item.price ? 0.6 : 1}
+        opacity={1}
       >
         <SymbolView
           name={{ ios: 'gift.fill', android: 'card_giftcard', web: 'card_giftcard' }}
@@ -176,18 +170,9 @@ export default function ShopScreen() {
             </Box>
 
             <Box gap="m">
-              <TouchableOpacity
-                onPress={handlePurchase}
-                disabled={Boolean(
-                  purchasing || (profile && selectedItem && profile.balance < selectedItem.price),
-                )}
-              >
+              <TouchableOpacity onPress={handlePurchase} disabled={purchasing}>
                 <Box
-                  backgroundColor={
-                    profile && selectedItem && profile.balance < selectedItem.price
-                      ? 'outline'
-                      : 'linkPrimary'
-                  }
+                  backgroundColor={'linkPrimary'}
                   padding="m"
                   borderRadius={12}
                   alignItems="center"

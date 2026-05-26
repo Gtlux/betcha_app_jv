@@ -1,6 +1,34 @@
 import { supabase } from './supabase';
+import { Platform } from 'react-native';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+/**
+ * Pagalbinė funkcija: prideda nuotrauką į FormData taip, kad veiktų
+ * tiek React Native (naudojant {uri, name, type} objektą),
+ * tiek Web naršyklėje (konvertuojant URI į tikrą Blob/File objektą).
+ */
+async function appendPhotoToFormData(
+  formData: FormData,
+  fieldName: string,
+  uri: string,
+  fileName: string,
+): Promise<void> {
+  if (Platform.OS === 'web') {
+    // Web: konvertuojame data:URI arba blob:URI į tikrą File objektą
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const file = new File([blob], fileName, { type: 'image/jpeg' });
+    formData.append(fieldName, file);
+  } else {
+    // React Native: naudojame RN-specifinį {uri, name, type} objektą
+    formData.append(fieldName, {
+      uri,
+      name: fileName,
+      type: 'image/jpeg',
+    } as unknown as Blob);
+  }
+}
 
 // Bendras fetch su timeout apsauga (kad UI nekabotų amžinai, kai API nepasiekiamas)
 async function fetchWithTimeout(
@@ -36,11 +64,7 @@ export async function uploadPhoto(uri: string): Promise<{ uploadId: string }> {
   const headers = await getAuthHeaders();
 
   const formData = new FormData();
-  formData.append('photo', {
-    uri,
-    name: 'photo.jpg',
-    type: 'image/jpeg',
-  } as unknown as Blob);
+  await appendPhotoToFormData(formData, 'photo', uri, 'photo.jpg');
 
   const response = await fetch(`${API_URL}/api/upload`, {
     method: 'POST',
@@ -285,11 +309,7 @@ export async function analyzePhoto(uri: string): Promise<AnalysisResult> {
   const headers = await getAuthHeaders();
 
   const formData = new FormData();
-  formData.append('photo', {
-    uri,
-    name: 'photo.jpg',
-    type: 'image/jpeg',
-  } as unknown as Blob);
+  await appendPhotoToFormData(formData, 'photo', uri, 'photo.jpg');
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
@@ -335,11 +355,7 @@ export async function submitEvidence(
   const headers = await getAuthHeaders();
 
   const formData = new FormData();
-  formData.append('photo', {
-    uri: photoUri,
-    name: 'evidence.jpg',
-    type: 'image/jpeg',
-  } as unknown as Blob);
+  await appendPhotoToFormData(formData, 'photo', photoUri, 'evidence.jpg');
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 30_000);
